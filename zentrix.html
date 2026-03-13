@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zentrix MD | Zentrix Tech</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --neon-purple: #a855f7;
+      --neon-cyan: #22d3ee;
+      --neon-pink: #ec4899;
+      --dark: #0a0a0f;
+      --darker: #050508;
+    }
+
+    body {
+      font-family: 'Rajdhani', sans-serif;
+      min-height: 100vh;
+      background: var(--darker);
+      color: white;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Particle Canvas */
+    #particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      background: linear-gradient(135deg, #050508 0%, #0a0a0f 50%, #0f0a14 100%);
+    }
+
+    /* Grid Overlay */
+    .grid-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(168, 85, 247, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(168, 85, 247, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Main Container */
+    .container {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    /* Logo */
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 30px;
+      animation: fadeInDown 0.8s ease-out;
+    }
+
+    .logo-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 30px rgba(168, 85, 247, 0.5);
+      animation: pulseGlow 2s ease-in-out infinite;
+    }
+
+    .logo-icon svg {
+      width: 28px;
+      height: 28px;
+      fill: white;
+    }
+
+    .logo-text {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 2px;
+    }
+
+    .logo-text span:first-child {
+      color: var(--neon-purple);
+      text-shadow: 0 0 20px rgba(168, 85, 247, 0.8);
+    }
+
+    .logo-text span:last-child {
+      color: var(--neon-cyan);
+      text-shadow: 0 0 20px rgba(34, 211, 238, 0.8);
+    }
+
+    /* Status Badge */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 50px;
+      margin-bottom: 25px;
+      animation: fadeIn 1s ease-out 0.3s both;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #10b981;
+      animation: pulse 2s infinite;
+    }
+
+    .status-badge span {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* Main Card */
+    .main-card {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      padding: 35px;
+      position: relative;
+      overflow: hidden;
+      animation: fadeInUp 0.8s ease-out 0.5s both;
+    }
+
+    .main-card::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      background: linear-gradient(45deg, var(--neon-purple), var(--neon-cyan), var(--neon-pink), var(--neon-purple));
+      background-size: 400% 400%;
+      border-radius: 26px;
+      z-index: -1;
+      animation: gradientRotate 4s linear infinite;
+      opacity: 0.5;
+    }
+
+    .main-card::after {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      background: var(--dark);
+      border-radius: 22px;
+      z-index: -1;
+    }
+
+    /* Card Header */
+    .card-header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .bot-name {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 32px;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan), var(--neon-pink));
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradientText 3s linear infinite;
+      margin-bottom: 8px;
+    }
+
+    .card-subtitle {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 14px;
+    }
+
+    /* Input Section */
+    .input-section {
+      margin-bottom: 20px;
+    }
+
+    .input-label {
+      display: block;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 12px;
+      color: var(--neon-cyan);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      gap: 10px;
+    }
+
+    .phone-input {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      border-radius: 12px;
+      padding: 15px 18px;
+      color: white;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 18px;
+      font-weight: 500;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .phone-input:focus {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
+    }
+
+    .phone-input::placeholder {
+      color: rgba(255, 255, 255, 0.3);
+    }
+
+    .generate-btn {
+      padding: 15px 20px;
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 60px;
+    }
+
+    .generate-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(168, 85, 247, 0.5);
+    }
+
+    .generate-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: 0.5s;
+    }
+
+    .generate-btn:hover::before {
+      left: 100%;
+    }
+
+    .generate-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    /* Loading Spinner */
+    .spinner {
+      width: 24px;
+      height: 24px;
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    /* Result Section */
+    .result-section {
+      margin-top: 20px;
+      min-height: 80px;
+    }
+
+    .code-display {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--neon-cyan);
+      border-radius: 16px;
+      padding: 25px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      animation: fadeIn 0.5s ease-out;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .code-display::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(34, 211, 238, 0.1), transparent);
+      transform: rotate(45deg);
+      animation: shine 3s infinite;
+    }
+
+    .code-display:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 30px rgba(34, 211, 238, 0.4);
+    }
+
+    .code-label {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+    }
+
+    .code-value {
+      font-family: 'Orbitron', monospace;
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--neon-cyan);
+      text-shadow: 0 0 20px rgba(34, 211, 238, 0.8);
+      letter-spacing: 4px;
+    }
+
+    .code-hint {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.4);
+      margin-top: 10px;
+    }
+
+    /* Error Message */
+    .error-message {
+      background: rgba(236, 72, 153, 0.1);
+      border: 1px solid rgba(236, 72, 153, 0.3);
+      border-radius: 12px;
+      padding: 15px;
+      color: var(--neon-pink);
+      text-align: center;
+      animation: shake 0.5s ease-out;
+    }
+
+    .error-message svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    /* Loading Dots */
+    .loading-dots {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 20px;
+    }
+
+    .loading-dots span {
+      width: 10px;
+      height: 10px;
+      background: var(--neon-cyan);
+      border-radius: 50%;
+      animation: bounce 1.4s ease-in-out infinite both;
+    }
+
+    .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+    .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+    /* Instructions */
+    .instructions {
+      margin-top: 25px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .instructions-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 12px;
+      color: var(--neon-purple);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .instructions-title svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    .instructions ol {
+      list-style: none;
+      counter-reset: step;
+    }
+
+    .instructions li {
+      counter-increment: step;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+      padding: 6px 0;
+      padding-left: 28px;
+      position: relative;
+    }
+
+    .instructions li::before {
+      content: counter(step);
+      position: absolute;
+      left: 0;
+      width: 20px;
+      height: 20px;
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 30px;
+      text-align: center;
+      animation: fadeIn 1s ease-out 0.8s both;
+    }
+
+    .footer-text {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .footer-text span {
+      color: var(--neon-cyan);
+      font-weight: 600;
+    }
+
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .social-links a {
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .social-links a:hover {
+      background: rgba(168, 85, 247, 0.2);
+      border-color: var(--neon-purple);
+      transform: translateY(-3px);
+    }
+
+    .social-links a svg {
+      width: 20px;
+      height: 20px;
+      fill: rgba(255, 255, 255, 0.6);
+      transition: all 0.3s ease;
+    }
+
+    .social-links a:hover svg {
+      fill: var(--neon-cyan);
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { 
+        box-shadow: 0 0 20px rgba(168, 85, 247, 0.5), 0 0 40px rgba(168, 85, 247, 0.3);
+      }
+      50% { 
+        box-shadow: 0 0 30px rgba(168, 85, 247, 0.8), 0 0 60px rgba(168, 85, 247, 0.5);
+      }
+    }
+
+    @keyframes gradientRotate {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes gradientText {
+      0% { background-position: 0% center; }
+      100% { background-position: 200% center; }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0); }
+      40% { transform: scale(1); }
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) rotate(45deg); }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .main-card {
+        padding: 25px;
+      }
+
+      .bot-name {
+        font-size: 26px;
+      }
+
+      .input-wrapper {
+        flex-direction: column;
+      }
+
+      .generate-btn {
+        width: 100%;
+        padding: 15px;
+      }
+
+      .code-value {
+        font-size: 28px;
+      }
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(16, 185, 129, 0.9);
+      backdrop-filter: blur(10px);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 12px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .toast svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+    }
+  </style>
+</head>
+<body>
+  <!-- Particle Canvas -->
+  <canvas id="particles"></canvas>
+  
+  <!-- Grid Overlay -->
+  <div class="grid-overlay"></div>
+
+  <!-- Main Container -->
+  <div class="container">
+    <!-- Logo -->
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      </div>
+      <div class="logo-text">
+        <span>ZEN</span><span>TRIX</span>
+      </div>
+    </div>
+
+    <!-- Status Badge -->
+    <div class="status-badge">
+      <div class="status-dot"></div>
+      <span>Zentrix MD is Online</span>
+    </div>
+
+    <!-- Main Card -->
+    <div class="main-card">
+      <!-- Card Header -->
+      <div class="card-header">
+        <h1 class="bot-name">Zentrix MD</h1>
+        <p class="card-subtitle">∞ Link with Phone Number ∞</p>
+      </div>
+
+      <!-- Input Section -->
+      <div class="input-section">
+        <label class="input-label">WhatsApp Number</label>
+        <div class="input-wrapper">
+          <input 
+            type="tel" 
+            class="phone-input" 
+            id="phoneInput"
+            placeholder="+2438xxxxxxxx"
+            autocomplete="off"
+          >
+          <button class="generate-btn" id="generateBtn" onclick="generateCode()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Result Section -->
+      <div class="result-section" id="resultSection"></div>
+
+      <!-- Instructions -->
+      <div class="instructions">
+        <div class="instructions-title">
+          <svg viewBox="0 0 24 24"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2M7 11l5 5 5-5M12 4v12"/></svg>
+          How to use
+        </div>
+        <ol>
+          <li>Enter your phone number with country code</li>
+          <li>Click the generate button</li>
+          <li>Copy the pair code</li>
+          <li>Paste it in Zentrix MD bot</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p class="footer-text">Powered by <span>Zentrix Tech</span></p>
+      <div class="social-links">
+        <a href="#" title="WhatsApp">
+          <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+        </a>
+        <a href="#" title="Telegram">
+          <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+        </a>
+        <a href="#" title="Discord">
+          <svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028 14.09 14.09 0 001.226-1.994.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03z"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+    <span>Code copied to clipboard!</span>
+  </div>
+
+  <script>
+    // Particle System
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const particles = [];
+    const colors = ['#a855f7', '#22d3ee', '#ec4899', '#8b5cf6'];
+
+    for (let i = 0; i < 60; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        size: Math.random() * 3 + 1,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        alpha: Math.random() * 0.5 + 0.2
+      });
+    }
+
+    function animateParticles() {
+      ctx.fillStyle = 'rgba(5, 5, 8, 0.1)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      particles.forEach((particle, i) => {
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+
+        if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
+        if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        ctx.fillStyle = particle.color;
+        ctx.globalAlpha = particle.alpha;
+        ctx.fill();
+
+        // Draw connections
+        particles.slice(i + 1).forEach((other) => {
+          const dx = particle.x - other.x;
+          const dy = particle.y - other.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < 150) {
+            ctx.beginPath();
+            ctx.moveTo(particle.x, particle.y);
+            ctx.lineTo(other.x, other.y);
+            ctx.strokeStyle = `rgba(168, 85, 247, ${0.1 * (1 - distance / 150)})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        });
+      });
+
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(animateParticles);
+    }
+
+    animateParticles();
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+
+    // Generate Code Function
+    async function generateCode() {
+      const phoneInput = document.getElementById('phoneInput');
+      const generateBtn = document.getElementById('generateBtn');
+      const resultSection = document.getElementById('resultSection');
+      const phoneNumber = phoneInput.value.trim();
+
+      // Validation
+      if (!phoneNumber) {
+        showError('Enter your WhatsApp number with country code');
+        return;
+      }
+
+      const cleanNumber = phoneNumber.replace(/[^0-9]/g, '');
+      if (cleanNumber.length < 10) {
+        showError('Invalid number format');
+        return;
+      }
+
+      // Show loading
+      generateBtn.disabled = true;
+      generateBtn.innerHTML = '<div class="spinner"></div>';
+      resultSection.innerHTML = `
+        <div class="loading-dots">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <p style="text-align: center; color: var(--neon-cyan); font-family: Orbitron; font-size: 14px;">Processing...</p>
+      `;
+
+      try {
+        // Call the backend API (original pairing endpoint)
+        const response = await fetch(`/code?number=${cleanNumber}`);
+        const data = await response.json();
+        
+        const code = data.code || 'Service Unavailable';
+
+        // Format phone number for display
+        let formattedNumber = '';
+        let temp = '';
+        const digits = cleanNumber.split('');
+        digits.forEach((digit) => {
+          temp += digit;
+          if (temp.length === 3) {
+            formattedNumber += ' ' + digit;
+          } else if (temp.length === 8) {
+            formattedNumber += ' ' + digit;
+          } else {
+            formattedNumber += digit;
+          }
+        });
+
+        phoneInput.value = '+' + formattedNumber;
+
+        // Show code
+        resultSection.innerHTML = `
+          <div class="code-display" onclick="copyCode('${code}')">
+            <div class="code-label">Your Pair Code</div>
+            <div class="code-value">${code}</div>
+            <div class="code-hint">Click to copy</div>
+          </div>
+        `;
+
+      } catch (error) {
+        showError('Service Unavailable');
+      } finally {
+        generateBtn.disabled = false;
+        generateBtn.innerHTML = `
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+        `;
+      }
+    }
+
+    // Show Error
+    function showError(message) {
+      const resultSection = document.getElementById('resultSection');
+      resultSection.innerHTML = `
+        <div class="error-message">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+          ${message}
+        </div>
+      `;
+    }
+
+    // Copy Code
+    async function copyCode(code) {
+      try {
+        await navigator.clipboard.writeText(code);
+        showToast();
+      } catch (err) {
+        // Fallback
+        const textArea = document.createElement('textarea');
+        textArea.value = code;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        showToast();
+      }
+    }
+
+    // Show Toast
+    function showToast() {
+      const toast = document.getElementById('toast');
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+
+    // Enter key support
+    document.getElementById('phoneInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        generateCode();
+      }
+    });
+  </script>
+</body>
+</html>
